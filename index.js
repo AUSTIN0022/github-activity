@@ -20,7 +20,6 @@ const getData = async (username) => {
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          // Consider adding a User-Agent header to be more respectful to GitHub API
           'User-Agent': 'GitHub-Activity-CLI'
         }
       }
@@ -36,43 +35,52 @@ const getData = async (username) => {
     // Display a count of total events found
     console.log(`Found ${events.length} recent activities:\n`);
 
-    events.forEach(event => {
-      let message = "";
-      const date = new Date(event.created_at).toLocaleString();
+    // Format the data for console.table
+    const tableData = events.map(event => {
+      let action = "";
       
       switch (event.type) {
         case "PushEvent":
-          message = `Pushed ${event.payload.commits?.length || 0} commit(s) to ${event.repo.name}`;
+          action = `Pushed ${event.payload.commits?.length || 0} commit(s)`;
           break;
         case "IssuesEvent":
-          message = `${event.payload.action} an issue in ${event.repo.name}`;
+          action = `${event.payload.action} an issue`;
           break;
         case "WatchEvent":
-          message = `Starred ${event.repo.name}`;
+          action = `Starred repository`;
           break;
         case "ForkEvent":
-          message = `Forked ${event.repo.name}`;
+          action = `Forked repository`;
           break;
         case "CreateEvent":
-          message = `Created a new ${event.payload.ref_type} in ${event.repo.name}`;
+          action = `Created a new ${event.payload.ref_type}`;
           break;
         case "PullRequestEvent":
-          message = `${event.payload.action} a pull request in ${event.repo.name}`;
+          action = `${event.payload.action} a pull request`;
           break;
         case "DeleteEvent":
-          message = `Deleted a ${event.payload.ref_type} in ${event.repo.name}`;
+          action = `Deleted a ${event.payload.ref_type}`;
           break;
         case "IssueCommentEvent":
-          message = `Commented on an issue in ${event.repo.name}`;
+          action = `Commented on an issue`;
           break;
         case "ReleaseEvent":
-          message = `Published a new release in ${event.repo.name}`;
+          action = `Published a new release`;
           break;
         default:
-          message = `Performed ${event.type} in ${event.repo.name}`;
+          action = `Performed ${event.type}`;
       }
-      console.log(`- ${message} (${date})`);
+
+      return {
+        Date: new Date(event.created_at).toLocaleString(),
+        Type: event.type,
+        Action: action,
+        Repository: event.repo.name
+      };
     });
+
+    // Display the data in table format
+    console.table(tableData);
 
   } catch (error) {
     // Improved error handling with more specific messages
