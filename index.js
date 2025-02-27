@@ -12,8 +12,8 @@ if (!username) {
 
 const getData = async (username) => {
   try {
-    // Add error handling for network requests
-    console.log(`Fetching activity for GitHub user: ${username}...`);
+    
+    console.log(`\nFetching activity for GitHub user: ${username}...`);
     
     const response = await axios.get(
       `https://api.github.com/users/${username}/events`,
@@ -28,12 +28,12 @@ const getData = async (username) => {
     const events = response.data;
 
     if (events.length === 0) {
-      console.log("No recent activity found for this user.");
+      console.log("\nNo recent activity found for this user.");
       return;
     }
 
     // Display a count of total events found
-    console.log(`Found ${events.length} recent activities:\n`);
+    console.log(`\nFound ${events.length} recent activities:\n`);
 
     // Format the data for console.table
     const tableData = events.map(event => {
@@ -85,8 +85,7 @@ const getData = async (username) => {
   } catch (error) {
     // Improved error handling with more specific messages
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
+      // The request was made and the server responded with a status code that falls out of the range of 2xx
       if (error.response.status === 404) {
         console.error(`Error: User '${username}' not found.`);
       } else if (error.response.status === 403) {
